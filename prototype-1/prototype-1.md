@@ -90,6 +90,17 @@ d1m.D1 - sensor.SCL
 
 Tools: Arduino IDE 1.6.7
 
+### esp8266/Arduino
+- https://github.com/esp8266/Arduino
+
+- Install using boards manager:
+https://github.com/esp8266/Arduino#installing-with-boards-manager
+
+### aws-sdk-esp8266
+- git clone ssh://git@github.com:daniele-salvagni/aws-sdk-esp8266.git
+aws-sdk-esp8266 -> /home/vlad/Projects/arduino/libraries/aws-sdk-esp8266
+
+
 ### aws-esp8266-sample
 - demo from https://github.com/daniele-salvagni/aws-sdk-esp8266
 
@@ -98,18 +109,34 @@ Tools: Arduino IDE 1.6.7
 ###  remote-temp-sensor
 Application.
 
-### aws-sdk-esp8266
-- git clone ssh://git@github.com:daniele-salvagni/aws-sdk-esp8266.git
-aws-sdk-esp8266 -> /home/vlad/Projects/arduino/libraries/aws-sdk-esp8266
 
 ### AM2320 driver
-https://github.com/thakshak/AM2320
-
 AM2320 -> /home/vlad/Projects/arduino/libraries/AM2320
- 
+
+- https://github.com/thakshak/AM2320
+    - forked from https://github.com/thakshak/AM2320
+    - requires bugfix
+
+#### BUG: Wire.begin() is called in the AM2320 constructor
+If the object is global, then Wire.begin() is called before main()/setup().
+This was tested NOT to work on Arduino/ESP8266.
+
+Fix: 
+- remove Wire.begin() call from constructor
+- client must ensure Wire.begin() is called (eg. from setup()), before any call to AM2320.read().
+
+fixed in vgheo/AM2320
+
+- Reported issue: https://github.com/thakshak/AM2320/issues/5
+- PR: https://github.com/thakshak/AM2320/pull/6
+
+
 ## Cloud DB setup
 https://github.com/daniele-salvagni/aws-sdk-esp8266
 - step 1
+
+
+
 
 
 # References

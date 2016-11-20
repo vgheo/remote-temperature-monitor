@@ -55,14 +55,19 @@ AttributeValue hashKey;
 AttributeValue rangeKey;
 ActionError actionError;
 
-//AM2320 th;
+AM2320 th;
 
 void setup() {
+
     /* Begin serial communication.
     note: esp8266 only supports this rate
     */
     Serial.begin(115200);
     Serial.println();
+
+    Serial.println("wire.begin()...");
+    Wire.begin();
+    
     Serial.print("Attempting to connect to SSID: ");
     Serial.println(pSSID);
 
@@ -149,7 +154,7 @@ void loop() {
     
     Serial.print(" Reading sensor...");
     
-    /*
+    
     switch(th.Read()) {
       case 2:
         Serial.println("CRC failed");
@@ -167,13 +172,13 @@ void loop() {
     }
     
     putTemp(th.t);
-*/
 
+/*
     int reading;
     reading =random(20,30);
     Serial.print("T="); Serial.println(reading);
     putTemp(reading);
-
+*/
     delay(5 * 1000);
 }
 
