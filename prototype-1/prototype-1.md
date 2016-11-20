@@ -109,6 +109,9 @@ aws-sdk-esp8266 -> /home/vlad/Projects/arduino/libraries/aws-sdk-esp8266
 ###  remote-temp-sensor
 Application.
 
+Problems with snprintf(%f) - apparently not supported
+http://forum.arduino.cc/index.php?topic=44262.0
+
 
 ### AM2320 driver
 AM2320 -> /home/vlad/Projects/arduino/libraries/AM2320

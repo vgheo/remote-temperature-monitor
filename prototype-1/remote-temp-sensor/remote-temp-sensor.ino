@@ -93,39 +93,51 @@ void setup() {
     ddbClient.setDateTimeProvider(&dateTimeProvider);
 }
 
-void putTemp(int temp) {
+/*
+ * 
+ * Note. printf %f is not supported by arduino
+ *    -  http://forum.arduino.cc/index.php?topic=44262.0
+ * 
+ */
+void setItem(PutItemInput& putItemInput, float temp, float humid) {
 
     /* Create an Item. */
     AttributeValue id;
     id.setS(HASH_KEY_VALUE);
+    
     AttributeValue timest;
     timest.setN(dateTimeProvider.getDateTime());
 
     /* Create an AttributeValue for 'temp', convert the number to a
      * string (AttributeValue object represents numbers as strings), and
      * use setN to apply that value to the AttributeValue. */
-    char numberBuffer[4];
-    AttributeValue tempAttributeValue;
-    sprintf(numberBuffer, "%d", temp);
-    tempAttributeValue.setN(numberBuffer);
+    char numberBuffer[20];
+    AttributeValue tempAV;
+    int cn=snprintf(numberBuffer, sizeof(numberBuffer), "%d.%d", (int)temp, ((int)(temp*100)) % 100 );
+    tempAV.setN(numberBuffer);    
+
+    AttributeValue humidAV;
+    snprintf(numberBuffer, sizeof(numberBuffer), "%d.%d", (int)humid, ((int)(humid*100)) % 100  );
+    humidAV.setN(numberBuffer);
 
     /* Create the Key-value pairs and make an array of them. */
-    MinimalKeyValuePair < MinimalString, AttributeValue
-            > att1(HASH_KEY_NAME, id);
-    MinimalKeyValuePair < MinimalString, AttributeValue
-            > att2(RANGE_KEY_NAME, timest);
-    MinimalKeyValuePair < MinimalString, AttributeValue
-            > att3("temp", tempAttributeValue);
-    MinimalKeyValuePair<MinimalString, AttributeValue> itemArray[] = { att1,
-            att2, att3 };
+    MinimalKeyValuePair < MinimalString, AttributeValue> att1(HASH_KEY_NAME, id);
+    MinimalKeyValuePair < MinimalString, AttributeValue> att2(RANGE_KEY_NAME, timest);
+    MinimalKeyValuePair < MinimalString, AttributeValue> att3("temp", tempAV);
+    MinimalKeyValuePair < MinimalString, AttributeValue> att4("humid", humidAV);
+
+    MinimalKeyValuePair<MinimalString, AttributeValue> itemArray[] = 
+      { att1, att2, att3, att4 };
 
     /* Set values for putItemInput. */
-    putItemInput.setItem(MinimalMap < AttributeValue > (itemArray, 3));
-    putItemInput.setTableName(TABLE_NAME);
+    putItemInput.setItem(MinimalMap < AttributeValue > (itemArray, 4));
+    putItemInput.setTableName(TABLE_NAME);  
+}
+
+void putItem(const PutItemInput& item) {
 
     /* Perform putItem and check for errors. */
-    PutItemOutput putItemOutput = ddbClient.putItem(putItemInput,
-            actionError);
+    PutItemOutput putItemOutput = ddbClient.putItem(item, actionError);
     switch (actionError) {
     case NONE_ACTIONERROR:
         Serial.println("PutItem succeeded!");
@@ -147,7 +159,6 @@ void putTemp(int temp) {
     }
      /* wait to not double-record */
     delay(750);
-  
 }
 
 void loop() {
@@ -170,15 +181,11 @@ void loop() {
         Serial.println("*C");
         break;
     }
-    
-    putTemp(th.t);
 
-/*
-    int reading;
-    reading =random(20,30);
-    Serial.print("T="); Serial.println(reading);
-    putTemp(reading);
-*/
+    setItem(putItemInput, th.t, th.h );
+    
+    putItem(putItemInput);
+
     delay(5 * 1000);
 }
 
