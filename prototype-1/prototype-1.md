@@ -140,9 +140,6 @@ https://github.com/daniele-salvagni/aws-sdk-esp8266
 
 
 # References
-[1]
-[2] 
-[3]
-[4] 
+(see inline)
 
 
